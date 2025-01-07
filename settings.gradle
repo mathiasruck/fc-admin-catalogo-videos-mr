@@ -1,0 +1,5 @@
+rootProject.name = 'fc-admin-catalogo-videos-mr'
+include 'domain'
+include 'application'
+include 'infrastructure'
+
