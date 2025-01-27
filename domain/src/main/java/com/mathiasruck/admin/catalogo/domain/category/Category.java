@@ -5,8 +5,9 @@ import static java.time.Instant.now;
 import java.time.Instant;
 
 import com.mathiasruck.admin.catalogo.domain.AggreateRoot;
+import com.mathiasruck.admin.catalogo.domain.validation.ValidationHandler;
 
-public class Category  extends AggreateRoot<CategoryID> {
+public class Category extends AggreateRoot<CategoryID> {
     private String name;
     private String description;
     private boolean isActive;
@@ -20,7 +21,7 @@ public class Category  extends AggreateRoot<CategoryID> {
             final String aDescription,
             final boolean isActive,
             final Instant aCreationDate,
-            final Instant aUpdateDate ,
+            final Instant aUpdateDate,
             final Instant aDeleteDate
     ) {
         super(anId);
@@ -32,7 +33,7 @@ public class Category  extends AggreateRoot<CategoryID> {
         this.deletedAt = aDeleteDate;
     }
 
-    public static Category newCategory(final String aName, final String aDescription, final boolean isActive){
+    public static Category newCategory(final String aName, final String aDescription, final boolean isActive) {
         return new Category(
                 CategoryID.unique(),
                 aName,
@@ -40,8 +41,29 @@ public class Category  extends AggreateRoot<CategoryID> {
                 isActive,
                 now(),
                 now(),
-                null
+                isActive ? null : now()
         );
+    }
+
+    @Override
+    public void validate(ValidationHandler handler) {
+        new CategoryValidator(this, handler).validate();
+    }
+
+    public Category activate() {
+        this.deletedAt = null;
+        this.isActive = true;
+        this.updatedAt = now();
+        return this;
+    }
+
+    public Category deactivate() {
+        if (getDeletedAt() == null) {
+            this.deletedAt = now();
+        }
+        this.isActive = false;
+        this.updatedAt = now();
+        return this;
     }
 
     public CategoryID getId() {
