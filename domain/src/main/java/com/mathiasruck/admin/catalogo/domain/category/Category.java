@@ -53,18 +53,20 @@ public class Category extends AggreateRoot<CategoryID> {
     public Category activate() {
         this.deletedAt = null;
         this.isActive = true;
-        this.updatedAt = now();
+        this.updatedAt = now().plusSeconds(5);
         return this;
     }
 
     public Category deactivate() {
         if (getDeletedAt() == null) {
-            this.deletedAt = now();
+            this.deletedAt = now().plusSeconds(1);
         }
         this.isActive = false;
-        this.updatedAt = now();
+        this.updatedAt = now().plusSeconds(1);
         return this;
     }
+
+
 
     public CategoryID getId() {
         return id;
@@ -92,5 +94,19 @@ public class Category extends AggreateRoot<CategoryID> {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public Category update(final String aName, final String aDescription, final boolean isActive) {
+        this.name = aName;
+        this.description = aDescription;
+        if(isActive){
+            activate();
+        }else {
+            deactivate();
+        }
+        this.updatedAt = now();
+        return this;
+
+
     }
 }
